@@ -1,11 +1,15 @@
 import discord
 from discord.ext import commands
 import requests
+import pyttsx3
+
+motor = pyttsx3.init()
+
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='/', intents=intents)
 
 @bot.event
 async def on_ready():
@@ -52,9 +56,34 @@ async def pokemon(ctx, *, nome):
         )
     else:
         await ctx.send('Pokémon não encontrado')
+
+
+@bot.command()
+async def facts(ctx):
+    url = 'https://uselessfacts.jsph.pl/random.json'
+
+    fato = requests.get(url)
+
+    if fato.status_code == 200:
+        resposta = fato.json()
+        await ctx.send(resposta['text'])
+
+        motor.say(resposta['text'])
+        motor.runAndWait()
+
+@bot.command()
+async def cachorro(ctx):
+    url = 'https://dog.ceo/api/breeds/image/random'
+
+    resposta = requests.get(url)
+
+    if resposta.status_code == 200:
+        dados = resposta.json()
+        await ctx.send(dados['message'])
+
     
 
 
 
 
-bot.run('TOKEN')
+bot.run('')
